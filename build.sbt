@@ -6,6 +6,8 @@ scalaVersion := "2.11.7"
 
 fullResolvers ~= {_.filterNot(_.name == "jcenter")}
 
+javacOptions += "-Xlint:deprecation"
+
 scalacOptions ++= (
   "-deprecation" ::
   "-unchecked" ::

@@ -274,21 +274,37 @@ final class TinyMT32(
     *
     * @return next int
     */
+  @deprecated("", "")
   def nextInt(): Int = {
     nextState()
-    output
+    output()
   }
+
+  def nextInt0: (TinyMT32, Int) = {
+    val s = nextState0()
+    (s, s.output())
+  }
+
 
   /**
     * returns 64-bit integer.
     *
     * @return next long
     */
+  @deprecated("", "")
   def nextLong(): Long = {
     var x: Long = nextInt()
     x = x << TinyMT32.INT_SIZE
     x |= nextInt() & TinyMT32.INT_TO_LONG_MASK
     x
+  }
+
+  def nextLong0(): (TinyMT32, Long) = {
+    val (s0, x0) = nextInt0
+    val t = x0 << TinyMT32.INT_SIZE
+    val (s1, x1) = s0.nextInt0
+    val x2 = t | (x1 & TinyMT32.INT_TO_LONG_MASK)
+    (s1, x2)
   }
 
   /**
@@ -482,6 +498,30 @@ final class TinyMT32(
   /**
     * The state transition function. This function is F<sub>2</sub>-linear.
     */
+  private def nextState0(): TinyMT32 = {
+    var x = 0
+    var y = 0
+    y = st3
+    x = (st0 & TinyMT32.MASK) ^ st1 ^ st2
+    x ^= (x << TinyMT32.SH0)
+    y ^= (y >>> TinyMT32.SH0) ^ x
+    val x0 = st1
+    val x3 = y
+    val x1 = st2 ^ parameter.getMat1(y)
+    val x2 = (x ^ (y << TinyMT32.SH1)) ^ parameter.getMat2(y)
+    new TinyMT32(
+      st0 = x0,
+      st1 = x1,
+      st2 = x2,
+      st3 = x3,
+      parameter = this.parameter
+    )
+  }
+
+  /**
+    * The state transition function. This function is F<sub>2</sub>-linear.
+    */
+  @deprecated("", "")
   private def nextState(): Unit = {
     var x: Int = 0
     var y: Int = 0
@@ -502,7 +542,7 @@ final class TinyMT32(
     *
     * @return pseudo random number
     */
-  private def output: Int = {
+  private def output(): Int = {
     var t0: Int = 0
     var t1: Int = 0
     t0 = st3
@@ -517,7 +557,7 @@ final class TinyMT32(
     *
     * @return float output.
     */
-  private def outputFloat: Float = {
+  private def outputFloat(): Float = {
     var t0: Int = 0
     var t1: Int = 0
     t0 = st3
@@ -624,7 +664,7 @@ final class TinyMT32(
     */
   def nextFloat(): Float = {
     nextState()
-    outputFloat
+    outputFloat()
   }
 
   /**
