@@ -36,8 +36,8 @@ public class TinyMT32ParameterTest {
         TinyMT32Parameter p0 = TinyMT32Parameter.getThreadLocalParameter(0);
         TinyMT32Parameter p1 = TinyMT32Parameter.getThreadLocalParameter(1);
         TinyMT32Parameter pm2 = TinyMT32Parameter.getThreadLocalParameter(-2);
-        assertTrue(p0.getMat1() != p1.getMat1());
-        assertTrue(p0.getMat1() != pm2.getMat1());
+        assertTrue(p0.mat1() != p1.mat1());
+        assertTrue(p0.mat1() != pm2.mat1());
     }
 	@Test
 	public void testGetDefaultParameter() {
@@ -50,21 +50,21 @@ public class TinyMT32ParameterTest {
 		int tmat = 0x3793fdff;
 		int weight = 63;
 		int delta = 0;
-		assertEquals(pol, p.getCharacteristic());
-		assertEquals(id, p.getId());
-		assertEquals(mat1, p.getMat1());
+		assertEquals(pol, p.characteristic());
+		assertEquals(id, p.id());
+		assertEquals(mat1, p.mat1());
         assertEquals(mat1, p.getMat1(1));
         assertEquals(0, p.getMat1(2));
-		assertEquals(mat2, p.getMat2());
+		assertEquals(mat2, p.mat2());
         assertEquals(mat2, p.getMat2(3));
         assertEquals(0, p.getMat2(4));
-		assertEquals(tmat, p.getTmat());
+		assertEquals(tmat, p.tmat());
         assertEquals(tmat, p.getTmat(5));
         assertEquals(0, p.getTmat(6));
         assertEquals(0x3f800000 | (tmat >>> 9), p.getTmatFloat(7));
         assertEquals(0x3f800000, p.getTmatFloat(8));
-		assertEquals(weight, p.getWeight());
-		assertEquals(delta, p.getDelta());
+		assertEquals(weight, p.weight());
+		assertEquals(delta, p.delta());
 	}
 
 	@Test
@@ -82,13 +82,13 @@ public class TinyMT32ParameterTest {
 		int[] weight = {63, 51};
 		int[] delta = {0, 0};
 		for (int i = 0; i < 2; i++) {
-			assertEquals(pol[i], p[i].getCharacteristic());
-			assertEquals(id[i], p[i].getId());
-			assertEquals(mat1[i], p[i].getMat1());
-			assertEquals(mat2[i], p[i].getMat2());
-			assertEquals(tmat[i], p[i].getTmat());
-			assertEquals(weight[i], p[i].getWeight());
-			assertEquals(delta[i], p[i].getDelta());
+			assertEquals(pol[i], p[i].characteristic());
+			assertEquals(id[i], p[i].id());
+			assertEquals(mat1[i], p[i].mat1());
+			assertEquals(mat2[i], p[i].mat2());
+			assertEquals(tmat[i], p[i].tmat());
+			assertEquals(weight[i], p[i].weight());
+			assertEquals(delta[i], p[i].delta());
 		}
 	}
 	
@@ -107,13 +107,13 @@ public class TinyMT32ParameterTest {
         int[] weight = {57, 69};
         int[] delta = {0, 1};
         for (int i = 0; i < 2; i++) {
-            assertEquals(pol[i], p[i].getCharacteristic());
-            assertEquals(id[i], p[i].getId());
-            assertEquals(mat1[i], p[i].getMat1());
-            assertEquals(mat2[i], p[i].getMat2());
-            assertEquals(tmat[i], p[i].getTmat());
-            assertEquals(weight[i], p[i].getWeight());
-            assertEquals(delta[i], p[i].getDelta());
+            assertEquals(pol[i], p[i].characteristic());
+            assertEquals(id[i], p[i].id());
+            assertEquals(mat1[i], p[i].mat1());
+            assertEquals(mat2[i], p[i].mat2());
+            assertEquals(tmat[i], p[i].tmat());
+            assertEquals(weight[i], p[i].weight());
+            assertEquals(delta[i], p[i].delta());
         }
     }
     
@@ -124,5 +124,5 @@ public class TinyMT32ParameterTest {
         TinyMT32Parameter[] tiny2 =  TinyMT32Parameter.getParameters(65534, 10);
         assertEquals(1, tiny2.length);
     }
-    
+
 }

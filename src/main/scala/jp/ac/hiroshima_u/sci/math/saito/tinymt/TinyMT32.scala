@@ -123,7 +123,7 @@ object TinyMT32 {
     * @return TinyMT with the first parameter.
     */
   def getDefault: TinyMT32 = {
-    val seed: Array[Int] = new Array[Int](4)
+    val seed = new Array[Int](4)
     val time: Long = System.nanoTime
     val threadId: Long = Thread.currentThread.getId
     seed(0) = (time >>> INT_SIZE).toInt
@@ -201,10 +201,10 @@ object TinyMT32 {
     */
   @throws(classOf[IOException])
   def getTinyMTArray (count: Int, seed: Long): Array[TinyMT32] = {
-    val params: Array[TinyMT32Parameter] = TinyMT32Parameter.getParameters(count)
+    val params = TinyMT32Parameter.getParameters(count)
     val tiny = new Array[TinyMT32](params.length)
 
-    var i: Int = 0
+    var i = 0
     while (i < params.length) {
       tiny(i) = new TinyMT32(params(i))
       tiny(i).setSeed(seed)
@@ -342,7 +342,7 @@ final class TinyMT32(
     var count: Int = 0
     var r: Int = 0
     val keyLength: Int = seeds.length
-    val status = Array[Int](0, parameter.getMat1, parameter.getMat2, parameter.getTmat)
+    val status = Array[Int](0, parameter.mat1, parameter.mat2, parameter.tmat)
     if (keyLength + 1 > TinyMT32.MIN_LOOP) {
       count = keyLength + 1
     }
@@ -440,9 +440,9 @@ final class TinyMT32(
     val counterMask: Int = 3
     val status: Array[Int] = new Array[Int](4)
     status(0) = seed
-    status(1) = parameter.getMat1
-    status(2) = parameter.getMat2
-    status(3) = parameter.getTmat
+    status(1) = parameter.mat1
+    status(2) = parameter.mat2
+    status(3) = parameter.tmat
 
     {
       var i: Int = 1
@@ -594,9 +594,9 @@ final class TinyMT32(
     * @return jumped array of TinyMT32.
     */
   def getJumpedArray (count: Int, jump: Long): Array[TinyMT32] = {
-    val tiny: Array[TinyMT32] = new Array[TinyMT32](count)
+    val tiny = new Array[TinyMT32](count)
     tiny(0) = this
-    val poly = tiny(0).parameter.getCharacteristic
+    val poly = tiny(0).parameter.characteristic
     val pow = TinyMT32.BASIC_JUMP_STEP.multiply(BigInteger.valueOf(jump))
     val jumpPoly = F2Polynomial.X.powerMod(pow, poly)
     var i: Int = 1
@@ -633,7 +633,7 @@ final class TinyMT32(
     * @return characteristic polynomial
     */
   def getCharacteristic: String = {
-    parameter.getCharacteristic.toString(TinyMT32.HEXA_DECIMAL_BASE)
+    parameter.characteristic.toString(TinyMT32.HEXA_DECIMAL_BASE)
   }
 
   /**
@@ -641,25 +641,19 @@ final class TinyMT32(
     *
     * @return ID
     */
-  def getId: Int = {
-    parameter.getId
-  }
+  def getId: Int = parameter.id
 
   /**
     * return Delta of TinyMT.
     *
     * @return Delta
     */
-  def getDelta: Int = {
-    parameter.getDelta
-  }
+  def getDelta: Int = parameter.delta
 
   /**
     * return Hamming weight of characteristic polynomial of TinyMT.
     *
     * @return Hamming weight
     */
-  def getWeight: Int = {
-    parameter.getWeight
-  }
+  def getWeight: Int = parameter.weight
 }

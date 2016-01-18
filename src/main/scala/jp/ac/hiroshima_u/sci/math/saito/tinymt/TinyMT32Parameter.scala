@@ -3,7 +3,6 @@ package jp.ac.hiroshima_u.sci.math.saito.tinymt
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.URL
 
 /**
   * This class is used to keep parameters for TinyMT32, and to get parameters
@@ -14,7 +13,7 @@ import java.net.URL
   */
 object TinyMT32Parameter {
   /** hexadecimal format. */
-  private val HEX_FORMAT: Int = 16
+  private final val HEX_FORMAT = 16
   /** int to float mask. */
   private final val INT_TO_FLOAT_MASK = 0x3f800000
   /** int to float shift. */
@@ -140,7 +139,7 @@ object TinyMT32Parameter {
   }
 
   /**
-    * make TinyMT32Prameter instance from line.
+    * make TinyMT32Parameter instance from line.
     *
     * @param line
     * line of resource file
@@ -149,7 +148,7 @@ object TinyMT32Parameter {
     * when line does not contain parameters.
     */
   @throws(classOf[IOException])
-  private def parseString (line: String): TinyMT32Parameter = {
+  private[this] def parseString (line: String): TinyMT32Parameter = {
     val str = line.split(",")
     if (str.length < 8) {
       throw new IOException("line does not contain parameters.")
@@ -165,7 +164,7 @@ object TinyMT32Parameter {
   }
 }
 
-final class TinyMT32Parameter (
+final case class TinyMT32Parameter (
   /** characteristic polynomial. */
   characteristic: F2Polynomial,
   /** ID of TinyMT32. */
@@ -213,33 +212,6 @@ final class TinyMT32Parameter (
   }
 
   /**
-    * return characteristic polynomial.
-    *
-    * @return characteristic polynomial
-    */
-  private[tinymt] def getCharacteristic: F2Polynomial = {
-    characteristic
-  }
-
-  /**
-    * return ID.
-    *
-    * @return ID
-    */
-  private[tinymt] def getId: Int = {
-    id
-  }
-
-  /**
-    * return mat1.
-    *
-    * @return mat1
-    */
-  private[tinymt] def getMat1: Int = {
-    mat1
-  }
-
-  /**
     * return mat1 when x is odd number.
     *
     * @param x
@@ -256,15 +228,6 @@ final class TinyMT32Parameter (
   }
 
   /**
-    * return mat2.
-    *
-    * @return mat2
-    */
-  private[tinymt] def getMat2: Int = {
-    mat2
-  }
-
-  /**
     * return mat2 when x is odd number.
     *
     * @param x
@@ -278,15 +241,6 @@ final class TinyMT32Parameter (
     else {
       mat2
     }
-  }
-
-  /**
-    * return tmat parameter.
-    *
-    * @return tmat
-    */
-  private[tinymt] def getTmat: Int = {
-    tmat
   }
 
   /**
@@ -321,21 +275,4 @@ final class TinyMT32Parameter (
     }
   }
 
-  /**
-    * return Hamming weight of characteristic polynomial.
-    *
-    * @return Hamming weight of characteristic polynomial
-    */
-  private[tinymt] def getWeight: Int = {
-    weight
-  }
-
-  /**
-    * return delta.
-    *
-    * @return delta
-    */
-  private[tinymt] def getDelta: Int = {
-    delta
-  }
 }
