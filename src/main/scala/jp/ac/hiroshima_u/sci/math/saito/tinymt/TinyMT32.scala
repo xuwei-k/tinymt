@@ -122,7 +122,7 @@ object TinyMT32 {
     *
     * @return TinyMT with the first parameter.
     */
-  def getDefault: TinyMT32 = {
+  def getDefault(): TinyMT32 = {
     val seed = new Array[Int](4)
     val time: Long = System.nanoTime
     val threadId: Long = Thread.currentThread.getId
@@ -274,7 +274,7 @@ final class TinyMT32(
     *
     * @return next int
     */
-  def nextInt: Int = {
+  def nextInt(): Int = {
     nextState()
     output
   }
@@ -284,10 +284,10 @@ final class TinyMT32(
     *
     * @return next long
     */
-  def nextLong: Long = {
-    var x: Long = nextInt
+  def nextLong(): Long = {
+    var x: Long = nextInt()
     x = x << TinyMT32.INT_SIZE
-    x |= nextInt & TinyMT32.INT_TO_LONG_MASK
+    x |= nextInt() & TinyMT32.INT_TO_LONG_MASK
     x
   }
 
@@ -296,7 +296,7 @@ final class TinyMT32(
     *
     * @param seed seed of randomness
     */
-  def setSeed (seed: Long) {
+  def setSeed (seed: Long): Unit = {
     if ((seed >= 0) && (seed < TinyMT32.LONG_LIMIT)) {
       setSeed(seed.toInt)
     }
@@ -316,7 +316,7 @@ final class TinyMT32(
     * @param seed
     * seed of pseudo random numbers
     */
-  def setSeed (seed: String) {
+  def setSeed (seed: String): Unit = {
     val intSeeds = new Array[Int](seed.length)
     var i = 0
     while (i < intSeeds.length) {
@@ -333,7 +333,7 @@ final class TinyMT32(
     * @param seeds
     * seeds of pseudo random numbers.
     */
-  def setSeed (seeds: Array[Int]) {
+  def setSeed (seeds: Array[Int]): Unit = {
     val lag: Int = 1
     val mid: Int = 1
     val size: Int = 4
@@ -436,7 +436,7 @@ final class TinyMT32(
     * @param seed
     * seed of pseudo random numbers
     */
-  def setSeed (seed: Int) {
+  def setSeed (seed: Int): Unit = {
     val counterMask: Int = 3
     val status: Array[Int] = new Array[Int](4)
     status(0) = seed
@@ -458,7 +458,7 @@ final class TinyMT32(
     periodCertification()
 
     {
-      var i: Int = 0
+      var i = 0
       while (i < TinyMT32.MIN_LOOP) {
         nextState()
         i += 1
@@ -533,7 +533,7 @@ final class TinyMT32(
     * @param that
     * vector which added to this vector
     */
-  private def add (that: TinyMT32) {
+  private def add (that: TinyMT32): Unit = {
     this.st0 ^= that.st0
     this.st1 ^= that.st1
     this.st2 ^= that.st2
@@ -612,7 +612,7 @@ final class TinyMT32(
     *
     * @return next double
     */
-  def nextDouble: Double = {
+  def nextDouble(): Double = {
     val x: Long = (nextLong >>> TinyMT32.LONG_TO_DOUBLE_SHIFT) | TinyMT32.LONG_TO_DOUBLE_MASK
     java.lang.Double.longBitsToDouble(x) - 1.0
   }
@@ -622,7 +622,7 @@ final class TinyMT32(
     *
     * @return next float
     */
-  def nextFloat: Float = {
+  def nextFloat(): Float = {
     nextState()
     outputFloat
   }
