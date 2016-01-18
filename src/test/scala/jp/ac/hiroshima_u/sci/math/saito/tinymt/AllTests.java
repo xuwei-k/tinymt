@@ -6,8 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ PolynomialTest.class, 
-        TinyMT32ParameterTest.class, TinyMT32Test.class, ThreadLocalRandomTest.class,
-        TinyMT64ParameterTest.class, TinyMT64Test.class })
+        TinyMT32ParameterTest.class, TinyMT32Test.class, ThreadLocalRandomTest.class,})
 public class AllTests {
 
 }
