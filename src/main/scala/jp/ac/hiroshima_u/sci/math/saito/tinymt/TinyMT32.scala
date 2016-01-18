@@ -219,7 +219,7 @@ object TinyMT32 {
     * @param threadId thread ID
     * @return TinyMT32 instance
     */
-  def getThreadLlocal (threadId: Long): TinyMT32 = {
+  def getThreadLocal (threadId: Long): TinyMT32 = {
     new TinyMT32(TinyMT32Parameter.getThreadLocalParameter(threadId))
   }
 }

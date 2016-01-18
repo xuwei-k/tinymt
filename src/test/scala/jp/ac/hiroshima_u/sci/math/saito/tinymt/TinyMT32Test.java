@@ -208,11 +208,11 @@ public class TinyMT32Test extends TestCase {
     
     @Test
     public void testgetThreadLocal() {
-        TinyMT32 tiny = TinyMT32.getThreadLlocal(0);
+        TinyMT32 tiny = TinyMT32.getThreadLocal(0);
         assertEquals("80227acb382d7b47f3714bd1223bedaf", tiny.getCharacteristic());
-        tiny = TinyMT32.getThreadLlocal(1);
+        tiny = TinyMT32.getThreadLocal(1);
         assertEquals("db46f27d546507bdf3445acd188fa8a3", tiny.getCharacteristic());
-        tiny = TinyMT32.getThreadLlocal(-1);
+        tiny = TinyMT32.getThreadLocal(-1);
         assertEquals("db46f27d546507bdf3445acd188fa8a3", tiny.getCharacteristic());
     }
 
