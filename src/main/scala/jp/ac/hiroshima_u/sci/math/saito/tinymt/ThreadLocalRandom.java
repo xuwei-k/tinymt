@@ -1,9 +1,5 @@
 package jp.ac.hiroshima_u.sci.math.saito.tinymt;
 
-import java.util.Random;
-
-import org.apache.commons.math.random.RandomAdaptor;
-
 /**
  * This class is an alternative implementation of 
  * java.util.concurrent.ThreadLocalRandom in
@@ -51,15 +47,6 @@ public final class ThreadLocalRandom {
      */
     public static TinyMT32 currentTinyMT() {
         return LOCAL_RANDOM.get();
-    }
-
-    /**
-     * get subclass of java.util.Random for current thread.
-     * 
-     * @return instance of subclass of java.util.Random 
-     */
-    public static Random current() {
-        return RandomAdaptor.createAdaptor(LOCAL_RANDOM.get());
     }
 
     /**

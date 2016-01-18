@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Random;
 
 import org.junit.Test;
 
@@ -56,7 +55,7 @@ public class ThreadLocalRandomTest {
         for (int i = 0; i < t.length; i++) {
             t[i] = new Thread() {
                 public void run() {
-                    Random r = ThreadLocalRandom.current();
+                    TinyMT32 r = TinyMT32.getDefault();
                     long threadId = Thread.currentThread().getId();
                     int[] array = new int[10];
                     for (int i = 0; i < array.length; i++) {

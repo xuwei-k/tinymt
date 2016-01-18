@@ -3,8 +3,6 @@ package jp.ac.hiroshima_u.sci.math.saito.tinymt;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import org.apache.commons.math.random.AbstractRandomGenerator;
-
 /**
  * TinyMT is a pseudo random number generator.
  * <p>
@@ -33,7 +31,7 @@ import org.apache.commons.math.random.AbstractRandomGenerator;
  *      "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/TINYMT/index.html">
  *      TinyMT web page</a>
  */
-public final class TinyMT32 extends AbstractRandomGenerator {
+public final class TinyMT32 {
     /** bit size of int. */
     private static final int INT_SIZE = 32;
     /** least long over int. */
@@ -112,7 +110,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
      * returns 32-bit integer.
      * @return next int
      */
-    @Override
     public int nextInt() {
         nextState();
         return output();
@@ -122,7 +119,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
      * returns 64-bit integer.
      * @return next long
      */
-    @Override
     public long nextLong() {
         long x = nextInt();
         x = x << INT_SIZE;
@@ -134,7 +130,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
      * initialize internal state by seed.
      * @param seed seed of randomness
      */
-    @Override
     public void setSeed(final long seed) {
         if ((seed >= 0) && (seed < LONG_LIMIT)) {
             setSeed((int) seed);
@@ -169,7 +164,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
      * @param seeds
      *            seeds of pseudo random numbers.
      */
-    @Override
     public void setSeed(final int[] seeds) {
 //  Needed if this is a subclass of java.util.Random. (Before Java 7)
 //          
@@ -234,7 +228,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
         for (i = 0; i < MIN_LOOP; i++) {
             nextState();
         }
-        clear();
     }
 
     /**
@@ -266,7 +259,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
      * @param seed
      *            seed of pseudo random numbers
      */
-    @Override
     public void setSeed(final int seed) {
         int counterMask = 3;
         int[] status = new int[4];
@@ -288,7 +280,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
         for (int i = 0; i < MIN_LOOP; i++) {
             nextState();
         }
-        clear();
     }
 
     /**
@@ -593,7 +584,6 @@ public final class TinyMT32 extends AbstractRandomGenerator {
      * returns float r, 0 <= r < 1.0.
      * @return next float
      */
-    @Override
     public float nextFloat() {
         nextState();
         return outputFloat();
