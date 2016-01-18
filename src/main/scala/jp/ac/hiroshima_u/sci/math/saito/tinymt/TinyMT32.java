@@ -526,7 +526,7 @@ public final class TinyMT32 {
         final F2Polynomial poly = tiny[0].parameter.getCharacteristic();
         final BigInteger pow = BASIC_JUMP_STEP.multiply(
                 new BigInteger(Long.toString(jump)));
-        final F2Polynomial jumpPoly = F2Polynomial.X.powerMod(pow, poly);
+        final F2Polynomial jumpPoly = F2Polynomial.X().powerMod(pow, poly);
         for (int i = 1; i < count; i++) {
             tiny[i] = tiny[i - 1].jump(jumpPoly);
         }
