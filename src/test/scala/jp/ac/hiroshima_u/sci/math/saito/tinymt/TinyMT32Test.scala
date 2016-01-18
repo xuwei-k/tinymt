@@ -9,12 +9,14 @@ import org.junit.Test
 final class TinyMT32Test extends TestCase {
   @Test
   def testGetDefault(): Unit = {
-    val tiny: TinyMT32 = TinyMT32.getDefault(1)
-    val output: Array[Int] = new Array[Int](10)
-    val c_data: Array[Int] = Array(0x97b6d625, 0x3a86e2e1, 0xdd7305b1, 0x8e4ef1b0, 0xd60a5515, 0xe3b751f6, 0x7e073136, 0x82e5df8b, 0xa5e6b3a8, 0x2d91deed)
+    var tiny = TinyMT32.getDefault(1)
+    val output = new Array[Int](10)
+    val c_data = Array(0x97b6d625, 0x3a86e2e1, 0xdd7305b1, 0x8e4ef1b0, 0xd60a5515, 0xe3b751f6, 0x7e073136, 0x82e5df8b, 0xa5e6b3a8, 0x2d91deed)
     var i: Int = 0
     while (i < output.length) {
-      output(i) = tiny.nextInt()
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
       i += 1
     }
     assertTrue(Arrays.equals(output, c_data))
@@ -28,13 +30,15 @@ final class TinyMT32Test extends TestCase {
 
   @Test
   def testGetDefaultString(): Unit =  {
-    val tiny = TinyMT32.getDefault("abcd")
+    var tiny = TinyMT32.getDefault("abcd")
     val output = new Array[Int](10)
     val c_data = Array(0x92264019, 0x3e048b87, 0x0618bd2a, 0x0b85252c, 0xf720f342, 0x73ac4297, 0x20974815, 0x8ac7a201, 0x7443b188, 0x0b7c6501)
 
     var i: Int = 0
     while (i < output.length) {
-      output(i) = tiny.nextInt()
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
       i += 1
     }
     assertTrue(Arrays.equals(output, c_data))
@@ -42,14 +46,16 @@ final class TinyMT32Test extends TestCase {
 
   @Test
   def testGetDefaultSeedArray(): Unit =  {
-    val seeds: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
-    val tiny = TinyMT32.getDefault(seeds)
+    val seeds = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    var tiny = TinyMT32.getDefault(seeds)
     val output = new Array[Int](10)
     val c_data = Array(0x7c14361a, 0x41b450a8, 0xfecc94ae, 0xd19693cd, 0x1d8b3ef7, 0xb5c88b3f, 0x45c79c71, 0xc8465811, 0x10fcf027, 0x4e3317e5)
 
     var i: Int = 0
     while (i < output.length) {
-      output(i) = tiny.nextInt()
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
       i += 1
     }
     assertTrue(Arrays.equals(output, c_data))
@@ -64,7 +70,9 @@ final class TinyMT32Test extends TestCase {
     while (i < 5) {
       var j: Int = 0
       while (j < output.length) {
-        output(j) = tiny(i).nextInt()
+        val temp = tiny(i).nextInt0
+        output(j) = temp._2
+        tiny(i) = temp._1
         j += 1
       }
       assertTrue("line:" + i, Arrays.equals(output, c_data(i)))
@@ -82,7 +90,9 @@ final class TinyMT32Test extends TestCase {
     while (i < 5) {
       var j: Int = 0
       while (j < output.length) {
-        output(j) = tiny(i).nextInt()
+        val temp = tiny(i).nextInt0
+        output(j) = temp._2
+        tiny(i) = temp._1
         j += 1
       }
       assertTrue("line:" + i, Arrays.equals(output, c_data(i)))
@@ -93,7 +103,7 @@ final class TinyMT32Test extends TestCase {
   @Test
   @throws(classOf[IOException])
   def testGetTinyMTArray(): Unit = {
-    val tiny: Array[TinyMT32] = TinyMT32.getTinyMTArray(3, 1)
+    val tiny = TinyMT32.getTinyMTArray(3, 1)
     val c_data = Array(Array(0xcaa912db, 0xa4f185e2, 0xf539b757, 0x3791a9b8, 0xb03509bf, 0x88a4100e, 0xd1072c63, 0x05a3c8e2, 0x89f1f44f, 0xc125e26e), Array(0x70367341, 0x51658c92, 0x6091a2d9, 0x1b9465d7, 0xcb32c649, 0xf40459eb, 0x4d9d49e9, 0xe20a31c1, 0x5a58f47d, 0x2c508fda), Array(0x457c166e, 0x59a81659, 0x666ce4ae, 0x86d92831, 0x2ccdb8cd, 0x2de09897, 0xb6ac8fe3, 0x5731a46a, 0xc6995e43, 0xa5685f6d))
     val output = new Array[Int](10)
 
@@ -101,7 +111,9 @@ final class TinyMT32Test extends TestCase {
     while (i < c_data.length) {
       var j: Int = 0
       while (j < output.length) {
-        output(j) = tiny(i).nextInt()
+        val temp = tiny(i).nextInt0
+        output(j) = temp._2
+        tiny(i) = temp._1
         j += 1
       }
       assertTrue("line:" + i, Arrays.equals(output, c_data(i)))
@@ -111,15 +123,17 @@ final class TinyMT32Test extends TestCase {
 
   @Test
   def testSeedArray(): Unit = {
-    val tiny: TinyMT32 = TinyMT32.getDefault(1)
-    val ar: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    var tiny = TinyMT32.getDefault(1)
+    val ar = Array[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
     val output = new Array[Int](10)
     val c_data = Array(0x7c14361a, 0x41b450a8, 0xfecc94ae, 0xd19693cd, 0x1d8b3ef7, 0xb5c88b3f, 0x45c79c71, 0xc8465811, 0x10fcf027, 0x4e3317e5)
     tiny.setSeed(ar)
 
     var i: Int = 0
     while (i < output.length) {
-      output(i) = tiny.nextInt()
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
       i += 1
     }
     assertTrue(Arrays.equals(output, c_data))
@@ -131,37 +145,41 @@ final class TinyMT32Test extends TestCase {
     val output = new Array[Int](10)
     val c_data = Array(0xeead8165, 0x8715ef2c, 0x23598315, 0x5facb14e, 0x73e28fdf, 0x9826df55, 0x8536bb9c, 0x0c73d703, 0x7b174b03, 0x7ddb6aaf)
 
-    {
-      var i: Int = 0
-      while (i < output.length) {
-        output(i) = tiny.nextInt()
-        i += 1
-      }
+    var i = 0
+    while (i < output.length) {
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
+      i += 1
     }
+
     assertTrue(Arrays.equals(output, c_data))
     tiny = TinyMT32.getDefault(0x1000000010000000L)
     val c_data2: Array[Int] = Array(0xfd520eb5, 0x6cdab063, 0x2877a46e, 0x5ed3fb03, 0xc1bb07ea, 0xfb872239, 0xd2e2bade, 0xa41ea287, 0x263e62d3, 0x94a5d5d1)
 
-    {
-      var i: Int = 0
-      while (i < output.length) {
-        output(i) = tiny.nextInt()
-        i += 1
-      }
+    i = 0
+    while (i < output.length) {
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
+      i += 1
     }
+
     assertTrue(Arrays.equals(output, c_data2))
   }
 
   @Test
   def testSetSeedArray(): Unit = {
-    val tiny = TinyMT32.getDefault()
+    var tiny = TinyMT32.getDefault()
     tiny.setSeed("abcd")
     val output = new Array[Int](10)
-    val c_data: Array[Int] = Array(0x92264019, 0x3e048b87, 0x0618bd2a, 0x0b85252c, 0xf720f342, 0x73ac4297, 0x20974815, 0x8ac7a201, 0x7443b188, 0x0b7c6501)
+    val c_data = Array[Int](0x92264019, 0x3e048b87, 0x0618bd2a, 0x0b85252c, 0xf720f342, 0x73ac4297, 0x20974815, 0x8ac7a201, 0x7443b188, 0x0b7c6501)
 
     var i: Int = 0
     while (i < output.length) {
-      output(i) = tiny.nextInt()
+      val temp = tiny.nextInt0
+      output(i) = temp._2
+      tiny = temp._1
       i += 1
     }
 
@@ -169,9 +187,9 @@ final class TinyMT32Test extends TestCase {
   }
 
   @Test def testNextFloat(): Unit = {
-    val tiny: TinyMT32 = TinyMT32.getDefault()
+    val tiny = TinyMT32.getDefault()
     tiny.setSeed(1)
-    val c_data: Array[Float] = Array(0.5926336050f, 0.2286207080f, 0.8650363684f, 0.5558921099f, 0.8360951543f, 0.8895159960f, 0.4922972322f, 0.5113201141f, 0.6480515003f, 0.1780070662f)
+    val c_data = Array[Float](0.5926336050f, 0.2286207080f, 0.8650363684f, 0.5558921099f, 0.8360951543f, 0.8895159960f, 0.4922972322f, 0.5113201141f, 0.6480515003f, 0.1780070662f)
 
     var i: Int = 0
     while (i < c_data.length) {
