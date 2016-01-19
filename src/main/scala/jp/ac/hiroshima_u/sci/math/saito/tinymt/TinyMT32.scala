@@ -216,22 +216,13 @@ object TinyMT32 {
 }
 
 final class TinyMT32(
-  /** internal state 0. */
-  private[this] var _st0: Int,
-  /** internal state 1. */
-  private[this] var _st1: Int,
-  /** internal state 2. */
-  private[this] var _st2: Int,
-  /** internal state 3. */
-  private[this] var _st3: Int,
+  private val st0: Int,
+  private val st1: Int,
+  private val st2: Int,
+  private val st3: Int,
   /** parameters for this generator. */
   private val parameter: TinyMT32Parameter
 ) {
-
-  private def st0: Int = _st0
-  private def st1: Int = _st1
-  private def st2: Int = _st2
-  private def st3: Int = _st3
 
   /**
     * Constructor from a parameter.
@@ -241,10 +232,10 @@ final class TinyMT32(
     */
   private def this (param: TinyMT32Parameter) {
     this(
-      _st0 = 0,
-      _st1 = 0,
-      _st2 = 0,
-      _st3 = 0,
+      st0 = 0,
+      st1 = 0,
+      st2 = 0,
+      st3 = 0,
       parameter = param
     )
   }
@@ -258,10 +249,10 @@ final class TinyMT32(
   private def this(that: TinyMT32) {
     this(
       parameter = that.parameter,
-      _st0 = that.st0,
-      _st1 = that.st1,
-      _st2 = that.st2,
-      _st3 = that.st3
+      st0 = that.st0,
+      st1 = that.st1,
+      st2 = that.st2,
+      st3 = that.st3
     )
   }
 
@@ -361,10 +352,10 @@ final class TinyMT32(
     }
 
     var x = new TinyMT32(
-      _st0 = status(0),
-      _st1 = status(1),
-      _st2 = status(2),
-      _st3 = status(3),
+      st0 = status(0),
+      st1 = status(1),
+      st2 = status(2),
+      st3 = status(3),
       parameter = this.parameter
     ).periodCertification0()
 
@@ -419,10 +410,10 @@ final class TinyMT32(
     }
 
     var x = new TinyMT32(
-      _st0 = status(0),
-      _st1 = status(1),
-      _st2 = status(2),
-      _st3 = status(3),
+      st0 = status(0),
+      st1 = status(1),
+      st2 = status(2),
+      st3 = status(3),
       parameter = this.parameter
     )
     x = x.periodCertification0()
@@ -441,10 +432,10 @@ final class TinyMT32(
   private def periodCertification0(): TinyMT32 = {
     if (((st0 & TinyMT32.MASK) == 0) && (st1 == 0) && (st2 == 0) && (st3 == 0)) {
       new TinyMT32(
-        _st0 = 'T',
-        _st1 = 'I',
-        _st2 = 'N',
-        _st3 = 'Y',
+        st0 = 'T',
+        st1 = 'I',
+        st2 = 'N',
+        st3 = 'Y',
         parameter = this.parameter
       )
     } else this
@@ -465,10 +456,10 @@ final class TinyMT32(
     val x1 = st2 ^ parameter.getMat1(y)
     val x2 = (x ^ (y << TinyMT32.SH1)) ^ parameter.getMat2(y)
     new TinyMT32(
-      _st0 = x0,
-      _st1 = x1,
-      _st2 = x2,
-      _st3 = x3,
+      st0 = x0,
+      st1 = x1,
+      st2 = x2,
+      st3 = x3,
       parameter = this.parameter
     )
   }
@@ -505,10 +496,10 @@ final class TinyMT32(
 
   private def add0(that: TinyMT32): TinyMT32 =
     new TinyMT32(
-      _st0 = this.st0 ^ that.st0,
-      _st1 = this.st1 ^ that.st1,
-      _st2 = this.st2 ^ that.st2,
-      _st3 = this.st3 ^ that.st3,
+      st0 = this.st0 ^ that.st0,
+      st1 = this.st1 ^ that.st1,
+      st2 = this.st2 ^ that.st2,
+      st3 = this.st3 ^ that.st3,
       parameter = this.parameter
     )
 
