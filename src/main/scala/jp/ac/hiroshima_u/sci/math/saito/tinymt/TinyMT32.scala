@@ -84,7 +84,7 @@ object TinyMT32 {
     */
   def getDefault (seed: String): TinyMT32 = {
     val defaultParameter = TinyMT32Parameter.getDefaultParameter
-    (new TinyMT32(defaultParameter)).setSeed0(seed)
+    (new TinyMT32(defaultParameter)).setSeed(seed)
   }
 
   /**
@@ -97,7 +97,7 @@ object TinyMT32 {
     */
   def getDefault (seed: Long): TinyMT32 = {
     val defaultParameter = TinyMT32Parameter.getDefaultParameter
-    (new TinyMT32(defaultParameter)).setSeed0(seed)
+    (new TinyMT32(defaultParameter)).setSeed(seed)
   }
 
   /**
@@ -108,7 +108,7 @@ object TinyMT32 {
     */
   def getDefault (seeds: Array[Int]): TinyMT32 = {
     val defaultParameter = TinyMT32Parameter.getDefaultParameter
-    new TinyMT32(defaultParameter).setSeed0(seeds)
+    new TinyMT32(defaultParameter).setSeed(seeds)
   }
 
   /**
@@ -127,7 +127,7 @@ object TinyMT32 {
     seed(2) = (threadId >>> INT_SIZE).toInt
     seed(3) = threadId.toInt
     val defaultParameter = TinyMT32Parameter.getDefaultParameter
-    new TinyMT32(defaultParameter).setSeed0(seed)
+    new TinyMT32(defaultParameter).setSeed(seed)
   }
 
   /**
@@ -200,7 +200,7 @@ object TinyMT32 {
 
     var i = 0
     while (i < params.length) {
-      tiny(i) = (new TinyMT32(params(i))).setSeed0(seed)
+      tiny(i) = (new TinyMT32(params(i))).setSeed(seed)
       i += 1
     }
     tiny
@@ -242,42 +242,42 @@ final class TinyMT32(
     )
   }
 
-  def nextInt0: (TinyMT32, Int) = {
-    val s = nextState0()
+  def nextInt: (TinyMT32, Int) = {
+    val s = nextState()
     (s, s.output())
   }
 
-  def nextLong0(): (TinyMT32, Long) = {
-    val (s0, x0) = nextInt0
+  def nextLong(): (TinyMT32, Long) = {
+    val (s0, x0) = nextInt
     val t: Long = (x0: Long) << TinyMT32.INT_SIZE
-    val (s1, x1) = s0.nextInt0
+    val (s1, x1) = s0.nextInt
     val x2 = t | (x1 & TinyMT32.INT_TO_LONG_MASK)
     (s1, x2)
   }
 
-  def setSeed0(seed: Long): TinyMT32 = {
+  def setSeed(seed: Long): TinyMT32 = {
     if ((seed >= 0) && (seed < TinyMT32.LONG_LIMIT)) {
-      setSeed0(seed.toInt)
+      setSeed(seed.toInt)
     }
     else {
       val tmp = new Array[Int](2)
       tmp(0) = (seed & 0xffffffff).toInt
       tmp(1) = (seed >>> TinyMT32.INT_SIZE).toInt
-      setSeed0(tmp)
+      setSeed(tmp)
     }
   }
 
-  def setSeed0(seed: String): TinyMT32 = {
+  def setSeed(seed: String): TinyMT32 = {
     val intSeeds = new Array[Int](seed.length)
     var i = 0
     while (i < intSeeds.length) {
       intSeeds(i) = seed.charAt(i)
       i += 1
     }
-    setSeed0(intSeeds)
+    setSeed(intSeeds)
   }
 
-  def setSeed0(seeds: Array[Int]): TinyMT32 = {
+  def setSeed(seeds: Array[Int]): TinyMT32 = {
     val lag: Int = 1
     val mid: Int = 1
     val size: Int = 4
@@ -349,7 +349,7 @@ final class TinyMT32(
     @tailrec
     def loop(z: TinyMT32, i: Int): TinyMT32 =
       if(i < TinyMT32.MIN_LOOP) {
-        loop(z.nextState0(), i + 1)
+        loop(z.nextState(), i + 1)
       } else {
         z
       }
@@ -380,7 +380,7 @@ final class TinyMT32(
     (x ^ (x >>> TinyMT32.INITIALIZE_SHIFT)) * TinyMT32.MAGIC_NUMBER2
   }
 
-  def setSeed0(seed: Int): TinyMT32 = {
+  def setSeed(seed: Int): TinyMT32 = {
     val counterMask = 3
     val status = new Array[Int](4)
     status(0) = seed
@@ -408,7 +408,7 @@ final class TinyMT32(
     @tailrec
     def loop(i: Int, z: TinyMT32): TinyMT32 =
       if(i < TinyMT32.MIN_LOOP) {
-        loop(i + 1, z.nextState0())
+        loop(i + 1, z.nextState())
       } else {
         z
       }
@@ -431,7 +431,7 @@ final class TinyMT32(
   /**
     * The state transition function. This function is F<sub>2</sub>-linear.
     */
-  private def nextState0(): TinyMT32 = {
+  private def nextState(): TinyMT32 = {
     var x = 0
     var y = 0
     y = st3
@@ -507,9 +507,9 @@ final class TinyMT32(
       if (i > degree) {
         that
       } else if (pol.getCoefficient(i) == 1) {
-        loop(i + 1, src.nextState0(), that.add0(src))
+        loop(i + 1, src.nextState(), that.add0(src))
       } else {
-        loop(i + 1, src.nextState0(), that)
+        loop(i + 1, src.nextState(), that)
       }
 
     loop(0, this, new TinyMT32(this.parameter))
@@ -546,14 +546,14 @@ final class TinyMT32(
     tiny
   }
 
-  def nextDouble0(): (TinyMT32, Double) = {
-    val temp = nextLong0()
+  def nextDouble(): (TinyMT32, Double) = {
+    val temp = nextLong()
     val x: Long = (temp._2 >>> TinyMT32.LONG_TO_DOUBLE_SHIFT) | TinyMT32.LONG_TO_DOUBLE_MASK
     (temp._1, java.lang.Double.longBitsToDouble(x) - 1.0)
   }
 
-  def nextFloat0(): (TinyMT32, Float) = {
-    val s = nextState0()
+  def nextFloat(): (TinyMT32, Float) = {
+    val s = nextState()
     (s, s.outputFloat())
   }
 
