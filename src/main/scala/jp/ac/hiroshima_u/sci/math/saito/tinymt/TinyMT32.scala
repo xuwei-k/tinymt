@@ -3,6 +3,8 @@ package jp.ac.hiroshima_u.sci.math.saito.tinymt
 import java.io.IOException
 import java.math.BigInteger
 
+import scala.annotation.tailrec
+
 /**
   * TinyMT is a pseudo random number generator.
   * <p>
@@ -240,22 +242,6 @@ final class TinyMT32(
     )
   }
 
-  /**
-    * Copy constructor.
-    *
-    * @param that
-    * source
-    */
-  private def this(that: TinyMT32) {
-    this(
-      parameter = that.parameter,
-      st0 = that.st0,
-      st1 = that.st1,
-      st2 = that.st2,
-      st3 = that.st3
-    )
-  }
-
   def nextInt0: (TinyMT32, Int) = {
     val s = nextState0()
     (s, s.output())
@@ -351,7 +337,7 @@ final class TinyMT32(
       }
     }
 
-    var x = new TinyMT32(
+    val x = new TinyMT32(
       st0 = status(0),
       st1 = status(1),
       st2 = status(2),
@@ -359,15 +345,16 @@ final class TinyMT32(
       parameter = this.parameter
     ).periodCertification0()
 
-    {
-      i = 0
-      while (i < TinyMT32.MIN_LOOP) {
-        x = x.nextState0()
-        i += 1
+    // TODO avoid allocate new instance each loop
+    @tailrec
+    def loop(z: TinyMT32, i: Int): TinyMT32 =
+      if(i < TinyMT32.MIN_LOOP) {
+        loop(z.nextState0(), i + 1)
+      } else {
+        z
       }
-    }
 
-    x
+    loop(x, 0)
   }
 
 
@@ -512,18 +499,20 @@ final class TinyMT32(
     * @return jumped new TinyMT
     */
   private def jump (pol: F2Polynomial): TinyMT32 = {
-    var src = new TinyMT32(this)
-    var that = new TinyMT32(this.parameter)
     val degree = pol.degree
-    var i = 0
-    while (i <= degree) {
-      if (pol.getCoefficient(i) == 1) {
-        that = that.add0(src)
+
+    // TODO avoid allocate new instance each loop
+    @tailrec
+    def loop(i: Int, src: TinyMT32, that: TinyMT32): TinyMT32 =
+      if (i > degree) {
+        that
+      } else if (pol.getCoefficient(i) == 1) {
+        loop(i + 1, src.nextState0(), that.add0(src))
+      } else {
+        loop(i + 1, src.nextState0(), that)
       }
-      src = src.nextState0()
-      i += 1
-    }
-    that
+
+    loop(0, this, new TinyMT32(this.parameter))
   }
 
   /**
