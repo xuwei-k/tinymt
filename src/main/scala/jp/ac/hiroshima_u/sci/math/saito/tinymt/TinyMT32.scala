@@ -641,12 +641,23 @@ final class TinyMT32(
     * @param that
     * vector which added to this vector
     */
+  @deprecated("", "")
   private def add (that: TinyMT32): Unit = {
     this.st0 ^= that.st0
     this.st1 ^= that.st1
     this.st2 ^= that.st2
     this.st3 ^= that.st3
   }
+
+  private def add0(that: TinyMT32): TinyMT32 =
+    new TinyMT32(
+      _st0 = this.st0 ^ that.st0,
+      _st1 = this.st1 ^ that.st1,
+      _st2 = this.st2 ^ that.st2,
+      _st3 = this.st3 ^ that.st3,
+      parameter = this.parameter
+    )
+
 
   /**
     * jump function.
@@ -656,31 +667,17 @@ final class TinyMT32(
     * @return jumped new TinyMT
     */
   private def jump (pol: F2Polynomial): TinyMT32 = {
-    val src = new TinyMT32(this)
-    val that = getZero
+    var src = new TinyMT32(this)
+    var that = new TinyMT32(this.parameter)
     val degree = pol.degree
     var i = 0
     while (i <= degree) {
       if (pol.getCoefficient(i) == 1) {
-        that.add(src)
+        that = that.add0(src)
       }
-      src.nextState()
+      src = src.nextState0()
       i += 1
     }
-    that
-  }
-
-  /**
-    * Make and return all zero status.
-    *
-    * @return all zero status
-    */
-  private def getZero: TinyMT32 = {
-    val that: TinyMT32 = new TinyMT32(this)
-    that.st0 = 0
-    that.st1 = 0
-    that.st2 = 0
-    that.st3 = 0
     that
   }
 
