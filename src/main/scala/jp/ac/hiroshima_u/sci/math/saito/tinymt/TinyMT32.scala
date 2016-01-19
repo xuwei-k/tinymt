@@ -226,16 +226,31 @@ object TinyMT32 {
 
 final class TinyMT32(
   /** internal state 0. */
-  private var st0: Int,
+  private[this] var _st0: Int,
   /** internal state 1. */
-  private var st1: Int,
+  private[this] var _st1: Int,
   /** internal state 2. */
-  private var st2: Int,
+  private[this] var _st2: Int,
   /** internal state 3. */
-  private var st3: Int,
+  private[this] var _st3: Int,
   /** parameters for this generator. */
   private val parameter: TinyMT32Parameter
 ) {
+
+
+  @deprecated("", "")
+  private def st0_=(x: Int): Unit = _st0 = x
+  @deprecated("", "")
+  private def st1_=(x: Int): Unit = _st1 = x
+  @deprecated("", "")
+  private def st2_=(x: Int): Unit = _st2 = x
+  @deprecated("", "")
+  private def st3_=(x: Int): Unit = _st3 = x
+
+  private def st0: Int = _st0
+  private def st1: Int = _st1
+  private def st2: Int = _st2
+  private def st3: Int = _st3
 
   /**
     * Constructor from a parameter.
@@ -245,10 +260,10 @@ final class TinyMT32(
     */
   private def this (param: TinyMT32Parameter) {
     this(
-      st0 = 0,
-      st1 = 0,
-      st2 = 0,
-      st3 = 0,
+      _st0 = 0,
+      _st1 = 0,
+      _st2 = 0,
+      _st3 = 0,
       parameter = param
     )
   }
@@ -262,10 +277,10 @@ final class TinyMT32(
   private def this(that: TinyMT32) {
     this(
       parameter = that.parameter,
-      st0 = that.st0,
-      st1 = that.st1,
-      st2 = that.st2,
-      st3 = that.st3
+      _st0 = that.st0,
+      _st1 = that.st1,
+      _st2 = that.st2,
+      _st3 = that.st3
     )
   }
 
@@ -445,6 +460,43 @@ final class TinyMT32(
     (x ^ (x >>> TinyMT32.INITIALIZE_SHIFT)) * TinyMT32.MAGIC_NUMBER2
   }
 
+  def setSeed0(seed: Int): TinyMT32 = {
+    val counterMask = 3
+    val status = new Array[Int](4)
+    status(0) = seed
+    status(1) = parameter.mat1
+    status(2) = parameter.mat2
+    status(3) = parameter.tmat
+
+    {
+      var i = 1
+      while (i < TinyMT32.MIN_LOOP) {
+        status(i & counterMask) ^= i + TinyMT32.MAGIC_NUMBER3 * (status((i - 1) & counterMask) ^ (status((i - 1) & counterMask) >>> TinyMT32.INITIALIZE_SHIFT2))
+        i += 1
+      }
+    }
+
+    var x = new TinyMT32(
+      _st0 = status(0),
+      _st1 = status(1),
+      _st2 = status(2),
+      _st3 = status(3),
+      parameter = this.parameter
+    )
+    x = x.periodCertification0()
+
+    {
+      var i = 0
+      while (i < TinyMT32.MIN_LOOP) {
+        x = x.nextState0()
+        i += 1
+      }
+    }
+
+    x
+  }
+
+
   /**
     * internal set seed function This seeding is compatible with C language
     * implementation.
@@ -452,6 +504,7 @@ final class TinyMT32(
     * @param seed
     * seed of pseudo random numbers
     */
+  @deprecated("","")
   def setSeed (seed: Int): Unit = {
     val counterMask: Int = 3
     val status: Array[Int] = new Array[Int](4)
@@ -467,6 +520,7 @@ final class TinyMT32(
         i += 1
       }
     }
+
     st0 = status(0)
     st1 = status(1)
     st2 = status(2)
@@ -486,6 +540,7 @@ final class TinyMT32(
     * Avoiding all zero status is sufficient for certificating the period of
     * 2<sup>127</sup> - 1 for TinyMT.
     */
+  @deprecated("", "")
   private def periodCertification(): Unit = {
     if (((st0 & TinyMT32.MASK) == 0) && (st1 == 0) && (st2 == 0) && (st3 == 0)) {
       st0 = 'T'
@@ -494,6 +549,19 @@ final class TinyMT32(
       st3 = 'Y'
     }
   }
+
+  private def periodCertification0(): TinyMT32 = {
+    if (((st0 & TinyMT32.MASK) == 0) && (st1 == 0) && (st2 == 0) && (st3 == 0)) {
+      new TinyMT32(
+        _st0 = 'T',
+        _st1 = 'I',
+        _st2 = 'N',
+        _st3 = 'Y',
+        parameter = this.parameter
+      )
+    } else this
+  }
+
 
   /**
     * The state transition function. This function is F<sub>2</sub>-linear.
@@ -510,10 +578,10 @@ final class TinyMT32(
     val x1 = st2 ^ parameter.getMat1(y)
     val x2 = (x ^ (y << TinyMT32.SH1)) ^ parameter.getMat2(y)
     new TinyMT32(
-      st0 = x0,
-      st1 = x1,
-      st2 = x2,
-      st3 = x3,
+      _st0 = x0,
+      _st1 = x1,
+      _st2 = x2,
+      _st3 = x3,
       parameter = this.parameter
     )
   }
