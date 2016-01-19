@@ -228,16 +228,6 @@ final class TinyMT32(
   private val parameter: TinyMT32Parameter
 ) {
 
-
-  @deprecated("", "")
-  private def st0_=(x: Int): Unit = _st0 = x
-  @deprecated("", "")
-  private def st1_=(x: Int): Unit = _st1 = x
-  @deprecated("", "")
-  private def st2_=(x: Int): Unit = _st2 = x
-  @deprecated("", "")
-  private def st3_=(x: Int): Unit = _st3 = x
-
   private def st0: Int = _st0
   private def st1: Int = _st1
   private def st2: Int = _st2
@@ -275,60 +265,17 @@ final class TinyMT32(
     )
   }
 
-  /**
-    * returns 32-bit integer.
-    *
-    * @return next int
-    */
-  @deprecated("", "")
-  def nextInt(): Int = {
-    nextState()
-    output()
-  }
-
   def nextInt0: (TinyMT32, Int) = {
     val s = nextState0()
     (s, s.output())
   }
 
-
-  /**
-    * returns 64-bit integer.
-    *
-    * @return next long
-    */
-  @deprecated("", "")
-  def nextLong(): Long = {
-    var x: Long = nextInt()
-    x = x << TinyMT32.INT_SIZE
-    x |= nextInt() & TinyMT32.INT_TO_LONG_MASK
-    x
-  }
-
   def nextLong0(): (TinyMT32, Long) = {
     val (s0, x0) = nextInt0
-    val t = x0 << TinyMT32.INT_SIZE
+    val t: Long = (x0: Long) << TinyMT32.INT_SIZE
     val (s1, x1) = s0.nextInt0
     val x2 = t | (x1 & TinyMT32.INT_TO_LONG_MASK)
     (s1, x2)
-  }
-
-  /**
-    * initialize internal state by seed.
-    *
-    * @param seed seed of randomness
-    */
-  @deprecated("", "")
-  def setSeed (seed: Long): Unit = {
-    if ((seed >= 0) && (seed < TinyMT32.LONG_LIMIT)) {
-      setSeed(seed.toInt)
-    }
-    else {
-      val tmp: Array[Int] = new Array[Int](2)
-      tmp(0) = (seed & 0xffffffff).toInt
-      tmp(1) = (seed >>> TinyMT32.INT_SIZE).toInt
-      setSeed(tmp)
-    }
   }
 
   def setSeed0(seed: Long): TinyMT32 = {
@@ -341,26 +288,6 @@ final class TinyMT32(
       tmp(1) = (seed >>> TinyMT32.INT_SIZE).toInt
       setSeed0(tmp)
     }
-  }
-
-
-  /**
-    * seeding by string, This will be convenient. This function does not
-    * compatible from other language implementation because coding of
-    * characters are different.
-    *
-    * @param seed
-    * seed of pseudo random numbers
-    */
-  @deprecated("","")
-  def setSeed (seed: String): Unit = {
-    val intSeeds = new Array[Int](seed.length)
-    var i = 0
-    while (i < intSeeds.length) {
-      intSeeds(i) = seed.charAt(i)
-      i += 1
-    }
-    setSeed(intSeeds)
   }
 
   def setSeed0(seed: String): TinyMT32 = {
@@ -454,88 +381,6 @@ final class TinyMT32(
 
 
   /**
-    * seeding by array of integers. This seeding is compatible with other
-    * language implementation.
-    *
-    * @param seeds
-    * seeds of pseudo random numbers.
-    */
-  @deprecated("","")
-  def setSeed (seeds: Array[Int]): Unit = {
-    val lag: Int = 1
-    val mid: Int = 1
-    val size: Int = 4
-    var i: Int = 0
-    var j: Int = 0
-    var count: Int = 0
-    var r: Int = 0
-    val keyLength: Int = seeds.length
-    val status = Array[Int](0, parameter.mat1, parameter.mat2, parameter.tmat)
-    if (keyLength + 1 > TinyMT32.MIN_LOOP) {
-      count = keyLength + 1
-    }
-    else {
-      count = TinyMT32.MIN_LOOP
-    }
-    r = iniFunc1(status(0) ^ status(mid % size) ^ status((size - 1) % size))
-    status(mid % size) += r
-    r += keyLength
-    status((mid + lag) % size) += r
-    status(0) = r
-    count -= 1
-
-    {
-      i = 1
-      j = 0
-      while ((j < count) && (j < keyLength)) {
-        r = iniFunc1(status(i % size) ^ status((i + mid) % size) ^ status((i + size - 1) % size))
-        status((i + mid) % size) += r
-        r += seeds(j) + i
-        status((i + mid + lag) % size) += r
-        status(i % size) = r
-        i = (i + 1) % size
-        j += 1
-      }
-    }
-
-    while (j < count) {
-      r = iniFunc1(status(i % size) ^ status((i + mid) % size) ^ status((i + size - 1) % size))
-      status((i + mid) % size) += r
-      r += i
-      status((i + mid + lag) % size) += r
-      status(i % size) = r
-      i = (i + 1) % size
-      j += 1
-    }
-
-    {
-      j = 0
-      while (j < size) {
-        r = iniFunc2(status(i % size) + status((i + mid) % size) + status((i + size - 1) % size))
-        status((i + mid) % size) ^= r
-        r -= i
-        status((i + mid + lag) % size) ^= r
-        status(i % size) = r
-        i = (i + 1) % size
-        j += 1
-      }
-    }
-    st0 = status(0)
-    st1 = status(1)
-    st2 = status(2)
-    st3 = status(3)
-    periodCertification()
-
-    {
-      i = 0
-      while (i < TinyMT32.MIN_LOOP) {
-        nextState()
-        i += 1
-      }
-    }
-  }
-
-  /**
     * sub function of initialization.
     *
     * @param x
@@ -593,60 +438,6 @@ final class TinyMT32(
     x
   }
 
-
-  /**
-    * internal set seed function This seeding is compatible with C language
-    * implementation.
-    *
-    * @param seed
-    * seed of pseudo random numbers
-    */
-  @deprecated("","")
-  def setSeed (seed: Int): Unit = {
-    val counterMask: Int = 3
-    val status: Array[Int] = new Array[Int](4)
-    status(0) = seed
-    status(1) = parameter.mat1
-    status(2) = parameter.mat2
-    status(3) = parameter.tmat
-
-    {
-      var i: Int = 1
-      while (i < TinyMT32.MIN_LOOP) {
-        status(i & counterMask) ^= i + TinyMT32.MAGIC_NUMBER3 * (status((i - 1) & counterMask) ^ (status((i - 1) & counterMask) >>> TinyMT32.INITIALIZE_SHIFT2))
-        i += 1
-      }
-    }
-
-    st0 = status(0)
-    st1 = status(1)
-    st2 = status(2)
-    st3 = status(3)
-    periodCertification()
-
-    {
-      var i = 0
-      while (i < TinyMT32.MIN_LOOP) {
-        nextState()
-        i += 1
-      }
-    }
-  }
-
-  /**
-    * Avoiding all zero status is sufficient for certificating the period of
-    * 2<sup>127</sup> - 1 for TinyMT.
-    */
-  @deprecated("", "")
-  private def periodCertification(): Unit = {
-    if (((st0 & TinyMT32.MASK) == 0) && (st1 == 0) && (st2 == 0) && (st3 == 0)) {
-      st0 = 'T'
-      st1 = 'I'
-      st2 = 'N'
-      st3 = 'Y'
-    }
-  }
-
   private def periodCertification0(): TinyMT32 = {
     if (((st0 & TinyMT32.MASK) == 0) && (st1 == 0) && (st2 == 0) && (st3 == 0)) {
       new TinyMT32(
@@ -658,7 +449,6 @@ final class TinyMT32(
       )
     } else this
   }
-
 
   /**
     * The state transition function. This function is F<sub>2</sub>-linear.
@@ -681,25 +471,6 @@ final class TinyMT32(
       _st3 = x3,
       parameter = this.parameter
     )
-  }
-
-  /**
-    * The state transition function. This function is F<sub>2</sub>-linear.
-    */
-  @deprecated("", "")
-  private def nextState(): Unit = {
-    var x: Int = 0
-    var y: Int = 0
-    y = st3
-    x = (st0 & TinyMT32.MASK) ^ st1 ^ st2
-    x ^= (x << TinyMT32.SH0)
-    y ^= (y >>> TinyMT32.SH0) ^ x
-    st0 = st1
-    st1 = st2
-    st2 = x ^ (y << TinyMT32.SH1)
-    st3 = y
-    st1 ^= parameter.getMat1(y)
-    st2 ^= parameter.getMat2(y)
   }
 
   /**
@@ -730,20 +501,6 @@ final class TinyMT32(
     t0 ^= t1
     t0 = (t0 >>> TinyMT32.INT_TO_FLOAT_SHIFT) ^ parameter.getTmatFloat(t1)
     java.lang.Float.intBitsToFloat(t0) - 1.0f
-  }
-
-  /**
-    * Addition as F<sub>2</sub> vector.
-    *
-    * @param that
-    * vector which added to this vector
-    */
-  @deprecated("", "")
-  private def add (that: TinyMT32): Unit = {
-    this.st0 ^= that.st0
-    this.st1 ^= that.st1
-    this.st2 ^= that.st2
-    this.st3 ^= that.st3
   }
 
   private def add0(that: TinyMT32): TinyMT32 =
@@ -809,25 +566,15 @@ final class TinyMT32(
     tiny
   }
 
-  /**
-    * returns double r, 0 <= r < 1.0.
-    *
-    * @return next double
-    */
-  def nextDouble(): Double = {
-    val x: Long = (nextLong >>> TinyMT32.LONG_TO_DOUBLE_SHIFT) | TinyMT32.LONG_TO_DOUBLE_MASK
-    java.lang.Double.longBitsToDouble(x) - 1.0
+  def nextDouble0(): (TinyMT32, Double) = {
+    val temp = nextLong0()
+    val x: Long = (temp._2 >>> TinyMT32.LONG_TO_DOUBLE_SHIFT) | TinyMT32.LONG_TO_DOUBLE_MASK
+    (temp._1, java.lang.Double.longBitsToDouble(x) - 1.0)
   }
 
-  /**
-    * returns float r, 0 <= r < 1.0.
-    *
-    * @return next float
-    */
-  @deprecated("","")
-  def nextFloat(): Float = {
-    nextState()
-    outputFloat()
+  def nextFloat0(): (TinyMT32, Float) = {
+    val s = nextState0()
+    (s, s.outputFloat())
   }
 
   /**

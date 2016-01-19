@@ -186,23 +186,28 @@ final class TinyMT32Test extends TestCase {
   }
 
   @Test def testNextFloat(): Unit = {
-    val tiny = TinyMT32.getDefault().setSeed0(1)
+    var tiny = TinyMT32.getDefault().setSeed0(1)
     val c_data = Array[Float](0.5926336050f, 0.2286207080f, 0.8650363684f, 0.5558921099f, 0.8360951543f, 0.8895159960f, 0.4922972322f, 0.5113201141f, 0.6480515003f, 0.1780070662f)
 
     var i = 0
     while (i < c_data.length) {
-      assertEquals(c_data(i), tiny.nextFloat(), 0.00001)
+      val temp = tiny.nextFloat0()
+      tiny = temp._1
+      assertEquals(c_data(i), temp._2, 0.00001)
       i += 1
     }
   }
 
-  @Test def testNextDouble(): Unit = {
-    val tiny = TinyMT32.getDefault().setSeed0(1)
+  @Test
+  def testNextDouble(): Unit = {
+    var tiny = TinyMT32.getDefault().setSeed0(1)
     val c_data = Array[Double](0.5926336137, 0.8650363501, 0.8360951594, 0.4922972448, 0.6480514799, 0.1497518912, 0.2052537946, 0.8592087870, 0.6802024140, 0.9528347664)
 
     var i = 0
     while (i < c_data.length) {
-      assertEquals(c_data(i), tiny.nextDouble(), 0.00000001)
+      val temp = tiny.nextDouble0()
+      tiny = temp._1
+      assertEquals(c_data(i), temp._2, 0.00000001)
       i += 1
     }
   }
