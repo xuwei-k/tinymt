@@ -396,24 +396,24 @@ final class TinyMT32(
       }
     }
 
-    var x = new TinyMT32(
+    val x = new TinyMT32(
       st0 = status(0),
       st1 = status(1),
       st2 = status(2),
       st3 = status(3),
       parameter = this.parameter
-    )
-    x = x.periodCertification0()
+    ).periodCertification0()
 
-    {
-      var i = 0
-      while (i < TinyMT32.MIN_LOOP) {
-        x = x.nextState0()
-        i += 1
+    // TODO avoid allocate new instance each loop
+    @tailrec
+    def loop(i: Int, z: TinyMT32): TinyMT32 =
+      if(i < TinyMT32.MIN_LOOP) {
+        loop(i + 1, z.nextState0())
+      } else {
+        z
       }
-    }
 
-    x
+    loop(0, x)
   }
 
   private def periodCertification0(): TinyMT32 = {
