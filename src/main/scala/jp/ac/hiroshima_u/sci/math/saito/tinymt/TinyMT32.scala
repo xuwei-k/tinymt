@@ -82,9 +82,7 @@ object TinyMT32 {
     */
   def getDefault (seed: String): TinyMT32 = {
     val defaultParameter = TinyMT32Parameter.getDefaultParameter
-    val tiny = new TinyMT32(defaultParameter)
-    tiny.setSeed(seed)
-    tiny
+    (new TinyMT32(defaultParameter)).setSeed0(seed)
   }
 
   /**
@@ -97,9 +95,7 @@ object TinyMT32 {
     */
   def getDefault (seed: Long): TinyMT32 = {
     val defaultParameter = TinyMT32Parameter.getDefaultParameter
-    val tiny = new TinyMT32(defaultParameter)
-    tiny.setSeed(seed)
-    tiny
+    (new TinyMT32(defaultParameter)).setSeed0(seed)
   }
 
   /**
@@ -109,10 +105,8 @@ object TinyMT32 {
     * @return random number generator TinyMT32
     */
   def getDefault (seeds: Array[Int]): TinyMT32 = {
-    val defaultParameter: TinyMT32Parameter = TinyMT32Parameter.getDefaultParameter
-    val tiny: TinyMT32 = new TinyMT32(defaultParameter)
-    tiny.setSeed(seeds)
-    tiny
+    val defaultParameter = TinyMT32Parameter.getDefaultParameter
+    new TinyMT32(defaultParameter).setSeed0(seeds)
   }
 
   /**
@@ -130,10 +124,8 @@ object TinyMT32 {
     seed(1) = time.toInt
     seed(2) = (threadId >>> INT_SIZE).toInt
     seed(3) = threadId.toInt
-    val defaultParameter: TinyMT32Parameter = TinyMT32Parameter.getDefaultParameter
-    val tiny: TinyMT32 = new TinyMT32(defaultParameter)
-    tiny.setSeed(seed)
-    tiny
+    val defaultParameter = TinyMT32Parameter.getDefaultParameter
+    new TinyMT32(defaultParameter).setSeed0(seed)
   }
 
   /**
@@ -206,8 +198,7 @@ object TinyMT32 {
 
     var i = 0
     while (i < params.length) {
-      tiny(i) = new TinyMT32(params(i))
-      tiny(i).setSeed(seed)
+      tiny(i) = (new TinyMT32(params(i))).setSeed0(seed)
       i += 1
     }
     tiny
@@ -327,6 +318,7 @@ final class TinyMT32(
     *
     * @param seed seed of randomness
     */
+  @deprecated("", "")
   def setSeed (seed: Long): Unit = {
     if ((seed >= 0) && (seed < TinyMT32.LONG_LIMIT)) {
       setSeed(seed.toInt)
@@ -339,6 +331,19 @@ final class TinyMT32(
     }
   }
 
+  def setSeed0(seed: Long): TinyMT32 = {
+    if ((seed >= 0) && (seed < TinyMT32.LONG_LIMIT)) {
+      setSeed0(seed.toInt)
+    }
+    else {
+      val tmp = new Array[Int](2)
+      tmp(0) = (seed & 0xffffffff).toInt
+      tmp(1) = (seed >>> TinyMT32.INT_SIZE).toInt
+      setSeed0(tmp)
+    }
+  }
+
+
   /**
     * seeding by string, This will be convenient. This function does not
     * compatible from other language implementation because coding of
@@ -347,6 +352,7 @@ final class TinyMT32(
     * @param seed
     * seed of pseudo random numbers
     */
+  @deprecated("","")
   def setSeed (seed: String): Unit = {
     val intSeeds = new Array[Int](seed.length)
     var i = 0
@@ -357,6 +363,96 @@ final class TinyMT32(
     setSeed(intSeeds)
   }
 
+  def setSeed0(seed: String): TinyMT32 = {
+    val intSeeds = new Array[Int](seed.length)
+    var i = 0
+    while (i < intSeeds.length) {
+      intSeeds(i) = seed.charAt(i)
+      i += 1
+    }
+    setSeed0(intSeeds)
+  }
+
+  def setSeed0(seeds: Array[Int]): TinyMT32 = {
+    val lag: Int = 1
+    val mid: Int = 1
+    val size: Int = 4
+    var i: Int = 0
+    var j: Int = 0
+    var count: Int = 0
+    var r: Int = 0
+    val keyLength: Int = seeds.length
+    val status = Array[Int](0, parameter.mat1, parameter.mat2, parameter.tmat)
+    if (keyLength + 1 > TinyMT32.MIN_LOOP) {
+      count = keyLength + 1
+    }
+    else {
+      count = TinyMT32.MIN_LOOP
+    }
+    r = iniFunc1(status(0) ^ status(mid % size) ^ status((size - 1) % size))
+    status(mid % size) += r
+    r += keyLength
+    status((mid + lag) % size) += r
+    status(0) = r
+    count -= 1
+
+    {
+      i = 1
+      j = 0
+      while ((j < count) && (j < keyLength)) {
+        r = iniFunc1(status(i % size) ^ status((i + mid) % size) ^ status((i + size - 1) % size))
+        status((i + mid) % size) += r
+        r += seeds(j) + i
+        status((i + mid + lag) % size) += r
+        status(i % size) = r
+        i = (i + 1) % size
+        j += 1
+      }
+    }
+
+    while (j < count) {
+      r = iniFunc1(status(i % size) ^ status((i + mid) % size) ^ status((i + size - 1) % size))
+      status((i + mid) % size) += r
+      r += i
+      status((i + mid + lag) % size) += r
+      status(i % size) = r
+      i = (i + 1) % size
+      j += 1
+    }
+
+    {
+      j = 0
+      while (j < size) {
+        r = iniFunc2(status(i % size) + status((i + mid) % size) + status((i + size - 1) % size))
+        status((i + mid) % size) ^= r
+        r -= i
+        status((i + mid + lag) % size) ^= r
+        status(i % size) = r
+        i = (i + 1) % size
+        j += 1
+      }
+    }
+
+    var x = new TinyMT32(
+      _st0 = status(0),
+      _st1 = status(1),
+      _st2 = status(2),
+      _st3 = status(3),
+      parameter = this.parameter
+    ).periodCertification0()
+
+    {
+      i = 0
+      while (i < TinyMT32.MIN_LOOP) {
+        x = x.nextState0()
+        i += 1
+      }
+    }
+
+    x
+  }
+
+
   /**
     * seeding by array of integers. This seeding is compatible with other
     * language implementation.
@@ -364,6 +460,7 @@ final class TinyMT32(
     * @param seeds
     * seeds of pseudo random numbers.
     */
+  @deprecated("","")
   def setSeed (seeds: Array[Int]): Unit = {
     val lag: Int = 1
     val mid: Int = 1
@@ -727,6 +824,7 @@ final class TinyMT32(
     *
     * @return next float
     */
+  @deprecated("","")
   def nextFloat(): Float = {
     nextState()
     outputFloat()

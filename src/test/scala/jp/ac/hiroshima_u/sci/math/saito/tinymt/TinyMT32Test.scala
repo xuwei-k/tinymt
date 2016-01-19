@@ -127,7 +127,7 @@ final class TinyMT32Test extends TestCase {
     val ar = Array[Int](1, 2, 3, 4, 5, 6, 7, 8, 9)
     val output = new Array[Int](10)
     val c_data = Array(0x7c14361a, 0x41b450a8, 0xfecc94ae, 0xd19693cd, 0x1d8b3ef7, 0xb5c88b3f, 0x45c79c71, 0xc8465811, 0x10fcf027, 0x4e3317e5)
-    tiny.setSeed(ar)
+    tiny = tiny.setSeed0(ar)
 
     var i: Int = 0
     while (i < output.length) {
@@ -170,8 +170,7 @@ final class TinyMT32Test extends TestCase {
 
   @Test
   def testSetSeedArray(): Unit = {
-    var tiny = TinyMT32.getDefault()
-    tiny.setSeed("abcd")
+    var tiny = TinyMT32.getDefault().setSeed0("abcd")
     val output = new Array[Int](10)
     val c_data = Array[Int](0x92264019, 0x3e048b87, 0x0618bd2a, 0x0b85252c, 0xf720f342, 0x73ac4297, 0x20974815, 0x8ac7a201, 0x7443b188, 0x0b7c6501)
 
