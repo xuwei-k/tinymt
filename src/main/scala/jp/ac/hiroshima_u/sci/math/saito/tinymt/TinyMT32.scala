@@ -35,6 +35,37 @@ import scala.annotation.tailrec
   *      TinyMT web page</a>
   */
 object TinyMT32 {
+  private final case class MutableState(
+    var st0: Int,
+    var st1: Int,
+    var st2: Int,
+    var st3: Int,
+    var param: TinyMT32Parameter
+  ) {
+    def asImmutable: TinyMT32 =
+      new TinyMT32(
+        st0 = st0,
+        st1 = st1,
+        st2 = st2,
+        st3 = st3,
+        parameter = param
+      )
+
+    def next(): this.type = {
+      var x = 0
+      var y = 0
+      y = st3
+      x = (st0 & TinyMT32.MASK) ^ st1 ^ st2
+      x ^= (x << TinyMT32.SH0)
+      y ^= (y >>> TinyMT32.SH0) ^ x
+      st0 = st1
+      st3 = y
+      st1 = st2 ^ param.getMat1(y)
+      st2 = (x ^ (y << TinyMT32.SH1)) ^ param.getMat2(y)
+      this
+    }
+  }
+
   /** bit size of int. */
   private val INT_SIZE: Int = 32
   /** least long over int. */
@@ -226,6 +257,15 @@ final class TinyMT32(
   private val parameter: TinyMT32Parameter
 ) {
 
+  private def asMutable: TinyMT32.MutableState =
+    TinyMT32.MutableState(
+      st0 = st0,
+      st1 = st1,
+      st2 = st2,
+      st3 = st3,
+      param = parameter
+    )
+
   /**
     * Constructor from a parameter.
     *
@@ -345,18 +385,16 @@ final class TinyMT32(
       parameter = this.parameter
     ).periodCertification0()
 
-    // TODO avoid allocate new instance each loop
     @tailrec
-    def loop(z: TinyMT32, i: Int): TinyMT32 =
+    def loop(z: TinyMT32.MutableState, i: Int): TinyMT32 =
       if(i < TinyMT32.MIN_LOOP) {
-        loop(z.nextState(), i + 1)
+        loop(z.next(), i + 1)
       } else {
-        z
+        z.asImmutable
       }
 
-    loop(x, 0)
+    loop(x.asMutable, 0)
   }
-
 
   /**
     * sub function of initialization.
@@ -404,16 +442,15 @@ final class TinyMT32(
       parameter = this.parameter
     ).periodCertification0()
 
-    // TODO avoid allocate new instance each loop
     @tailrec
-    def loop(i: Int, z: TinyMT32): TinyMT32 =
+    def loop(i: Int, z: TinyMT32.MutableState): TinyMT32 =
       if(i < TinyMT32.MIN_LOOP) {
-        loop(i + 1, z.nextState())
+        loop(i + 1, z.next())
       } else {
-        z
+        z.asImmutable
       }
 
-    loop(0, x)
+    loop(0, x.asMutable)
   }
 
   private def periodCertification0(): TinyMT32 = {
